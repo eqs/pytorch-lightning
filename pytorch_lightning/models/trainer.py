@@ -393,6 +393,13 @@ class Trainer(TrainerIO):
             for i, x in enumerate(data_batch):
                 if isinstance(x, torch.Tensor):
                     data_batch[i] = x.cuda(gpu_id)
+                elif isinstance(x, list):
+                    for j, element in enumerate(x):
+                        if isinstance(element, torch.Tensor):
+                            x[j] = element.cuda(gpu_id)
+                        elif isinstance(element, dict):
+                            x[j] = {k: v.cuda(gpu_id) \
+                                    for k, v in element.items()}
 
             # do non dp, ddp step
             output = model.validation_step(*args)
@@ -929,6 +936,14 @@ We recommend you switch to ddp if you want to use amp
             for i, x in enumerate(data_batch):
                 if isinstance(x, torch.Tensor):
                     data_batch[i] = x.cuda(gpu_id)
+                elif isinstance(x, list):
+                    for j, element in enumerate(x):
+                        if isinstance(element, torch.Tensor):
+                            x[j] = element.cuda(gpu_id)
+                        elif isinstance(element, dict):
+                            x[j] = {k: v.cuda(gpu_id) \
+                                    for k, v in element.items()}
+
             output = self.model.training_step(*args)
 
         else:
